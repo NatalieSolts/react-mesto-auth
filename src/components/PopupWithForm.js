@@ -29,7 +29,7 @@ function PopupWithForm({
         >
           {children}
           <button
-            className="popup__button-submit button-submit button-hover"
+            className="popup__button-submit button button-submit button-hover"
             type="submit"
           >
             {buttonText}
