@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import headerLogo from "../image/header-logo.svg";
 
 function Header({ buttonText, buttonLink, email }) {
@@ -11,9 +12,9 @@ function Header({ buttonText, buttonLink, email }) {
       />
       <div className="header__container">
         <span className="header__email">{email}</span>
-        <a className="header__button button-hover" href="#">
+        <Link to={buttonLink} className="header__button button-hover">
           {buttonText}
-        </a>
+        </Link>
       </div>
     </header>
   );
