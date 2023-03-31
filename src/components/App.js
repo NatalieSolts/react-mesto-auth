@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
-import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
@@ -25,6 +24,8 @@ function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userRes, cardsRes]) => {
@@ -33,6 +34,14 @@ function App() {
       })
       .catch((err) => console.log(err));
   }, []);
+
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
+  function handleRegister() {
+    navigate("/sign-in", { replace: true });
+  }
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
@@ -113,7 +122,6 @@ function App() {
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <Header />
         <Routes>
           <Route
             path="/"
@@ -125,8 +133,22 @@ function App() {
               )
             }
           />
-          <Route path="/sign-in" element={<Login />} />
-          <Route path="/sign-up" element={<Register />} />
+          <Route
+            path="/sign-in"
+            element={
+              <Login onLogin={handleLogin} title="Вход" buttonText="Войти" />
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={
+              <Register
+                onRegister={handleRegister}
+                title="Регистрация"
+                buttonText="Зарегистрироваться"
+              />
+            }
+          />
           <Route
             path="/mesto-react"
             element={
