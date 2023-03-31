@@ -11,6 +11,7 @@ import AddPlacePopup from "./AddPlacePopup";
 import ImagePopup from "./ImagePopup";
 import Login from "./Login";
 import Register from "./Register";
+import ProtectedRouteElement from "./ProtectedRoute";
 
 import api from "../utils/api";
 
@@ -152,7 +153,8 @@ function App() {
           <Route
             path="/mesto-react"
             element={
-              <Main
+              <ProtectedRouteElement
+                element={Main}
                 cards={cards}
                 onEditProfile={handleEditProfileClick}
                 onAddPlace={handleAddPlaceClick}
