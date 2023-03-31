@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Header from "./Header";
-import "./Login.css";
 
 const Login = ({ onLogin, title, buttonText }) => {
   const [formValue, setFormValue] = useState({
