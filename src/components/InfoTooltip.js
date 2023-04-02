@@ -9,7 +9,7 @@ function InfoTooltip({ isOpen, onClose, isSuccess, message }) {
       className={`popup popup_type_success ${isOpen ? "popup_opened" : ""}`}
       onClick={onClose}
     >
-      <div className="popup__container popup__container-info">
+      <div className="popup__container popup__container-success">
         <button
           className="popup__button-close button-hover"
           type="reset"
@@ -20,7 +20,7 @@ function InfoTooltip({ isOpen, onClose, isSuccess, message }) {
           src={isSuccess ? successImage : failImage}
           alt="#"
         />
-        <h2 className="popup__title-success">{message}</h2>
+        <h2 className="popup__title popup__title-success">{message}</h2>
       </div>
     </section>
   );
