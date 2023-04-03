@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-
 import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
@@ -13,8 +12,8 @@ import Login from "./Login";
 import Register from "./Register";
 import ProtectedRouteElement from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
-
 import api from "../utils/api";
+import auth from "../utils/auth";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -26,26 +25,74 @@ function App() {
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
   const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState("");
   const [isRegistrationSuccess, setIsRegistrationSuccess] = useState(false);
-
+  const [email, setEmail] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userRes, cardsRes]) => {
-        setCurrentUser(userRes);
-        setCards(cardsRes);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  // Токен сохраняется в localStorage и используетсяся при работе с сайтом
+  const tokenCheck = useCallback(() => {
+    const token = localStorage.getItem("token");
+    if (token && !loggedIn) {
+      auth
+        .checkToken(token)
+        .then((res) => {
+          if (res) {
+            setLoggedIn(true);
+            navigate("/mesto-react", { replace: true });
+            setEmail(res.data.email);
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [loggedIn, navigate]);
 
-  function handleLogin() {
-    setLoggedIn(true);
+  useEffect(() => {
+    tokenCheck();
+    if (loggedIn) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userRes, cardsRes]) => {
+          setCurrentUser(userRes);
+          setCards(cardsRes);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [loggedIn, tokenCheck]);
+
+  function handleLogin(email, password) {
+    auth
+      .login(email, password)
+      .then((res) => {
+        localStorage.setItem("token", res.token);
+        setLoggedIn(true);
+        setEmail(email);
+        navigate("/mesto-react", { replace: true });
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsRegistrationSuccess(false);
+        handleSignup("Что-то пошло не так! Попробуйте еще раз.");
+      });
   }
 
-  function handleRegister() {
-    navigate("/sign-in", { replace: true });
+  function handleRegister(email, password) {
+    auth
+      .register(email, password)
+      .then(() => {
+        navigate("/sign-in", { replace: true });
+        setIsRegistrationSuccess(true);
+        handleSignup("Вы успешно зарегистрировались!");
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsRegistrationSuccess(false);
+        handleSignup("Что-то пошло не так! Попробуйте еще раз.");
+      });
+  }
+
+  function handleSignup(message) {
+    setIsInfoTooltipMessage(message);
+    setIsInfoTooltipOpen(true);
   }
 
   function handleEditProfileClick() {
@@ -122,6 +169,7 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setSelectedCard(null);
+    setIsInfoTooltipOpen(false);
   }
 
   return (
@@ -166,6 +214,8 @@ function App() {
                 onCardClick={handleCardClick}
                 onCardLike={handleCardLike}
                 onCardDelete={handleCardDelete}
+                loggedIn={loggedIn}
+                email={email}
               />
             }
           />
