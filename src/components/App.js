@@ -95,6 +95,12 @@ function App() {
     setIsInfoTooltipOpen(true);
   }
 
+  function handleSignout() {
+    setLoggedIn(false);
+    localStorage.removeItem("token");
+    navigate("/sign-in", { replace: true });
+  }
+
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
   }
@@ -214,6 +220,7 @@ function App() {
                 onCardClick={handleCardClick}
                 onCardLike={handleCardLike}
                 onCardDelete={handleCardDelete}
+                onSignout={handleSignout}
                 loggedIn={loggedIn}
                 email={email}
               />

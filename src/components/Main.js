@@ -11,13 +11,19 @@ function Main({
   onCardClick,
   onCardLike,
   onCardDelete,
+  onSignout,
   email,
 }) {
   const currentUser = useContext(CurrentUserContext);
 
   return (
     <>
-      <Header buttonText="Выйти" buttonLink="/sign-in" email={email} />
+      <Header
+        buttonText="Выйти"
+        buttonLink="/sign-in"
+        onSignout={onSignout}
+        email={email}
+      />
       <main className="content">
         <section className="profile">
           <button className="profile__avatar-button" onClick={onEditAvatar}>
