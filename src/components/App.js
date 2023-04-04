@@ -59,14 +59,16 @@ function App() {
     }
   }, [loggedIn, tokenCheck]);
 
-  function handleLogin(email, password) {
+  function handleLogin(userData) {
     auth
-      .login(email, password)
+      .login(userData)
       .then((res) => {
-        localStorage.setItem("token", res.token);
-        setLoggedIn(true);
-        setEmail(email);
-        navigate("/mesto-react", { replace: true });
+        if (res.token) {
+          localStorage.setItem("token", res.token);
+          setLoggedIn(true);
+          setEmail(userData.email);
+          navigate("/", { replace: true });
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -75,9 +77,9 @@ function App() {
       });
   }
 
-  function handleRegister(email, password) {
+  function handleRegister(regUserData) {
     auth
-      .register(email, password)
+      .register(regUserData)
       .then(() => {
         navigate("/sign-in", { replace: true });
         setIsRegistrationSuccess(true);
